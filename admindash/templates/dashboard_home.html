@@ -1,0 +1,36 @@
+{% extends "dashboard_base.html" %}
+
+{% block sidecontent %}
+
+<dl class="grid grid-cols-1 gap-4 px-20 sm:grid-cols-3">
+    <div class="flex flex-col rounded-lg bg-blue-100 px-4 py-8 text-center">
+        <dt class="order-last text-lg font-medium text-gray-500">
+            Total Projects
+        </dt>
+
+        <dd class="text-4xl font-extrabold text-blue-600 md:text-5xl">
+            15
+        </dd>
+    </div>
+
+    <div class="flex flex-col rounded-lg bg-blue-100 px-4 py-8 text-center">
+        <dt class="order-last text-lg font-medium text-gray-500">
+            Total Employees
+        </dt>
+
+        <dd class="text-4xl font-extrabold text-blue-600 md:text-5xl">24</dd>
+    </div>
+
+    <div class="flex flex-col rounded-lg bg-blue-100 px-4 py-8 text-center">
+        <dt class="order-last text-lg font-medium text-gray-500">
+            ToDos in Progress
+        </dt>
+
+        <dd class="text-4xl font-extrabold text-blue-600 md:text-5xl">
+            186
+        </dd>
+    </div>
+</dl>
+</div>
+
+{% endblock %}

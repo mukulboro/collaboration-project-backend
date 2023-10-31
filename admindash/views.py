@@ -61,6 +61,6 @@ def logout_admin(request):
 def dashboard(request):
     if request.user.is_authenticated:
         print(request.user.email)
-        return render(request, "dashboard.html")
+        return render(request, "dashboard_home.html")
     else:
         return render(request, "error.html", {"code":401, "message":"Unauthorized"})
