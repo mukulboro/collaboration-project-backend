@@ -19,10 +19,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-STATIC_URL = "static/"
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -32,6 +32,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'admindash',
     'api',
+    'cdn',
+    'endusers'
 ]
 
 MIDDLEWARE = [
@@ -97,6 +99,8 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+AUTH_USER_MODEL = 'endusers.CustomUser'
 
 
 # Internationalization

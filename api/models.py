@@ -1,3 +1,12 @@
 from django.db import models
 
-# Create your models here.
+class TimeStampMixIn(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        abstract = True
+
+class Users(TimeStampMixIn):
+    email = models.EmailField()
+    passwored = models.CharField()
