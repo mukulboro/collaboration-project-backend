@@ -26,3 +26,7 @@ class RegisterForm(UserCreationForm):
         if commit:
             user.save()
         return user
+    
+class LoginForm(forms.Form):
+    username = forms.CharField(max_length=64)
+    password = forms.CharField()

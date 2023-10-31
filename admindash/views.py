@@ -1,6 +1,7 @@
-from django.shortcuts import render, HttpResponse
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate
 from endusers.models import Organization, OrganizationAdmin
-from .forms import RegisterForm
+from .forms import RegisterForm, LoginForm
 
 def register(request):
     if request.method == "GET":
@@ -26,14 +27,34 @@ def register(request):
             organization_admin = OrganizationAdmin(user=user, organization=organization)
             organization_admin.save()
 
-            return HttpResponse(user)
+            return redirect("/admin/login?newAccount=True")
 
         return render(request, "register.html", {"error": form.errors.as_text})
 
 
 def login(request):
-    return render(request, "login.html")
+    if request.method == "GET":
+        isNew = request.GET.get("newAccount")
+        if isNew:
+            return render(request, "login.html", {"newAccount":isNew})
+        return render(request, "login.html")
+    elif request.method == "POST":
+        form = LoginForm(request.POST)
+        print(form.is_valid())
+        if not form.is_valid():
+            return render(request, "login.html", {"error": form.errors.as_text})
+        else:
+            username = form.cleaned_data["username"]
+            password = form.cleaned_data["password"]
+            user = authenticate(username=username, password=password)
+            if user is None:
+                return render(request, "login.html", {"error":"Invalid Credentials"})
+            else:
+                return redirect('/admin/dashboard')
 
 
 def dashboard(request):
-    return render(request, "dashboard.html")
+    if request.user.is_authenticated:
+        return render(request, "dashboard.html")
+    else:
+        return render(request, "error.html", {"code":401, "message":"Unauthorized"})
