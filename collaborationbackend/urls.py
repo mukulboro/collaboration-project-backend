@@ -6,5 +6,5 @@ urlpatterns = [
     path("api/", include("api.urls")),
     path("cdn/", include("cdn.urls")),
     path('dev-admin/', admin.site.urls),
-    path('auth/', include('endusers.urls'))
+    path('users/', include('endusers.urls'))
 ]
