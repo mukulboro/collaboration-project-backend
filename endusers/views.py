@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, login
 from django.contrib.auth.hashers import make_password
 from django.db import IntegrityError
 from cdn.models import ProfilePicture
@@ -63,7 +63,6 @@ class LoginView(APIView):
             if user is None:
                 return Response({"error":"Invalid credentials"}, status=401)
             token = Token.objects.create(user=user)
-            print(token.key)
             return Response({"success":"Login successful", "token":token.key})
         except IntegrityError as e:
             token = Token.objects.get(user=user)

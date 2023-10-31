@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, logout, login
 from endusers.models import Organization, OrganizationAdmin
 from .forms import RegisterForm, LoginForm
 
-def register(request):
+
+def register_admin(request):
     if request.method == "GET":
         return render(request, "register.html")
     elif request.method == "POST":
@@ -32,7 +33,7 @@ def register(request):
         return render(request, "register.html", {"error": form.errors.as_text})
 
 
-def login(request):
+def login_admin(request):
     if request.method == "GET":
         isNew = request.GET.get("newAccount")
         if isNew:
@@ -50,11 +51,16 @@ def login(request):
             if user is None:
                 return render(request, "login.html", {"error":"Invalid Credentials"})
             else:
+                login(request=request, user=user)
                 return redirect('/admin/dashboard')
 
+def logout_admin(request):
+    logout(request)
+    return redirect('/admin/login/')
 
 def dashboard(request):
     if request.user.is_authenticated:
+        print(request.user.email)
         return render(request, "dashboard.html")
     else:
         return render(request, "error.html", {"code":401, "message":"Unauthorized"})
