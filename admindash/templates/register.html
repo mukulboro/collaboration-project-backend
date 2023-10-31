@@ -16,83 +16,107 @@
             <div class="max-w-xl lg:max-w-3xl">
                 <a class="block text-blue-600" href="/">
                     <span class="sr-only">Home</span>
-                    
+
                 </a>
+
+
+                {% if error %}
+                <span
+                    class="inline-flex items-center justify-center rounded-full bg-red-100 px-2.5 py-0.5 text-red-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="-ms-1 me-1.5 h-4 w-4">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                    </svg>
+
+                    <p class="whitespace-nowrap text-sm">{{ error }}</p>
+                </span>
+                {% endif %}
+
 
                 <h1 class="mt-6 text-2xl font-bold text-gray-900 sm:text-3xl md:text-4xl">
                     Register to TaskSphere
                 </h1>
 
                 <p class="mt-4 leading-relaxed text-gray-500">
-                    Empower your team, simplify collaboration, and boost productivity with TaskSphere. 
-                    Our all-in-one project management platform is designed for everyone, not just developers. 
-                    Seamlessly manage tasks, projects, and deadlines, foster team collaboration, 
+                    Empower your team, simplify collaboration, and boost productivity with TaskSphere.
+                    Our all-in-one project management platform is designed for everyone, not just developers.
+                    Seamlessly manage tasks, projects, and deadlines, foster team collaboration,
                     and stay organized in one intuitive workspace.
                 </p>
 
                 <form action="/admin/register/" method="post" class="mt-8 grid grid-cols-6 gap-6">
                     {% csrf_token %}
                     <div class="col-span-6">
-                        <label for="OrganizationName" class="block text-sm font-medium text-gray-700">
+                        <label for="organization_name" class="block text-sm font-medium text-gray-700">
                             Organization Name
                         </label>
-
-                        <input type="text" id="OrganizationName" name="organization_name"
+                        <input type="hidden" id="role" name="role" value="ADMIN">
+                        <input type="text" id="organization_name" name="organization_name"
                             class="mt-1 w-full rounded-md border-gray-200 bg-white text-sm text-gray-700 shadow-sm" />
                     </div>
 
                     <div class="col-span-6">
-                        <label for="OrganizationDescription" class="block text-sm font-medium text-gray-700">
+                        <label for="organization_description" class="block text-sm font-medium text-gray-700">
                             Organization Description
                         </label>
 
-                        <textarea id="OrganizationDescription" name="organization_description"
+                        <textarea id="organization_description" name="organization_description"
                             class="mt-1 w-full rounded-md border-gray-200 bg-white text-sm text-gray-700 shadow-sm" />
-                    </textarea>
-                        </div>
+                        </textarea>
+                    </div>
 
                     <div class="col-span-6 sm:col-span-3">
-                        <label for="FirstName" class="block text-sm font-medium text-gray-700">
+                        <label for="first_name" class="block text-sm font-medium text-gray-700">
                             First Name
                         </label>
 
-                        <input type="text" id="FirstName" name="first_name"
+                        <input type="text" id="first_name" name="first_name"
                             class="mt-1 w-full rounded-md border-gray-200 bg-white text-sm text-gray-700 shadow-sm" />
                     </div>
 
                     <div class="col-span-6 sm:col-span-3">
-                        <label for="LastName" class="block text-sm font-medium text-gray-700">
+                        <label for="last_name" class="block text-sm font-medium text-gray-700">
                             Last Name
                         </label>
 
-                        <input type="text" id="LastName" name="last_name"
+                        <input type="text" id="last_name" name="last_name"
                             class="mt-1 w-full rounded-md border-gray-200 bg-white text-sm text-gray-700 shadow-sm" />
                     </div>
 
                     <div class="col-span-6">
-                        <label for="Email" class="block text-sm font-medium text-gray-700">
+                        <label for="email" class="block text-sm font-medium text-gray-700">
                             Email
                         </label>
 
-                        <input type="email" id="Email" name="email"
+                        <input type="email" id="email" name="email"
+                            class="mt-1 w-full rounded-md border-gray-200 bg-white text-sm text-gray-700 shadow-sm" />
+                    </div>
+
+                    <div class="col-span-6">
+                        <label for="username" class="block text-sm font-medium text-gray-700">
+                            Username
+                        </label>
+
+                        <input type="text" id="username" name="username"
                             class="mt-1 w-full rounded-md border-gray-200 bg-white text-sm text-gray-700 shadow-sm" />
                     </div>
 
                     <div class="col-span-6 sm:col-span-3">
-                        <label for="Password" class="block text-sm font-medium text-gray-700">
+                        <label for="password1" class="block text-sm font-medium text-gray-700">
                             Password
                         </label>
 
-                        <input type="password" id="Password" name="password"
+                        <input type="password" id="password1" name="password1"
                             class="mt-1 w-full rounded-md border-gray-200 bg-white text-sm text-gray-700 shadow-sm" />
                     </div>
 
                     <div class="col-span-6 sm:col-span-3">
-                        <label for="PasswordConfirmation" class="block text-sm font-medium text-gray-700">
+                        <label for="password2" class="block text-sm font-medium text-gray-700">
                             Password Confirmation
                         </label>
 
-                        <input type="password" id="PasswordConfirmation" name="password_confirmation"
+                        <input type="password" id="password2" name="password2"
                             class="mt-1 w-full rounded-md border-gray-200 bg-white text-sm text-gray-700 shadow-sm" />
                     </div>
 
