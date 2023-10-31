@@ -24,7 +24,7 @@ class OrganizationAdmin(models.Model):
     organization = models.OneToOneField(Organization, on_delete=models.CASCADE)
 
 class EndUser(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     profile_picture = models.ForeignKey(ProfilePicture, on_delete=models.DO_NOTHING)
 
 
