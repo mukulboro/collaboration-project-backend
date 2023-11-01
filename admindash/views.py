@@ -163,7 +163,6 @@ def dashboard_employees(request):
         )
         employees = []
         for employee in users_in_org:
-            end_user = EndUser.objects.get(user=employee.user)
             employees.append(
                 {
                     "username": employee.user.username,
