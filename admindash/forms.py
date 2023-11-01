@@ -33,3 +33,7 @@ class LoginForm(forms.Form):
 
 class NewProjectForm(forms.Form):
     prj_name = forms.CharField(max_length=128)
+
+class AddEmployeeForm(forms.Form):
+    username = forms.CharField(max_length=64)
+    email = forms.CharField(max_length=128)

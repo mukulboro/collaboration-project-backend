@@ -18,3 +18,7 @@ class Project(TimeStampMixIn):
 class UsersInProjects(TimeStampMixIn):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
+
+class UsersInOrganizations(TimeStampMixIn):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)

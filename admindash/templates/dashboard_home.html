@@ -20,7 +20,9 @@
             Total Employees
         </dt>
 
-        <dd class="text-4xl font-extrabold text-blue-600 md:text-5xl">24</dd>
+        <dd class="text-4xl font-extrabold text-blue-600 md:text-5xl">
+            {{ org_details.total_employees }}
+        </dd>
     </div>
 
     <div class="flex flex-col rounded-lg shadow-lg bg-blue-100 px-4 py-8 text-center">
@@ -50,36 +52,32 @@
                         <thead class="text-xs font-semibold uppercase text-gray-400 bg-gray-50">
                             <tr>
                                 <th class="p-2 whitespace-nowrap">
+                                    <div class="font-semibold text-left">ID</div>
+                                </th>
+                                <th class="p-2 whitespace-nowrap">
                                     <div class="font-semibold text-left">Name</div>
                                 </th>
                                 <th class="p-2 whitespace-nowrap">
-                                    <div class="font-semibold text-left">Email</div>
-                                </th>
-                                <th class="p-2 whitespace-nowrap">
-                                    <div class="font-semibold text-left">Spent</div>
-                                </th>
-                                <th class="p-2 whitespace-nowrap">
-                                    <div class="font-semibold text-center">Country</div>
+                                    <div class="font-semibold text-left">Created On</div>
                                 </th>
                             </tr>
                         </thead>
                         <tbody class="text-sm divide-y divide-gray-100">
+                            {% for project in org_details.projects %}
                             <tr>
                                 <td class="p-2 whitespace-nowrap">
                                     <div class="flex items-center">
-                                        <div class="font-medium text-gray-800">Alex Shatov</div>
+                                        <div class="font-medium text-gray-800">{{project.id}}</div>
                                     </div>
                                 </td>
                                 <td class="p-2 whitespace-nowrap">
-                                    <div class="text-left">alexshatov@gmail.com</div>
+                                    <div class="text-left">{{project.name}}</div>
                                 </td>
                                 <td class="p-2 whitespace-nowrap">
-                                    <div class="text-left font-medium text-green-500">$2,890.66</div>
-                                </td>
-                                <td class="p-2 whitespace-nowrap">
-                                    <div class="text-lg text-center">🇺🇸</div>
+                                    <div class="text-left">{{project.created}}</div>
                                 </td>
                             </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                     <hr class="m-1 mb-2">
@@ -108,36 +106,32 @@
                         <thead class="text-xs font-semibold uppercase text-gray-400 bg-gray-50">
                             <tr>
                                 <th class="p-2 whitespace-nowrap">
+                                    <div class="font-semibold text-left">Username</div>
+                                </th>
+                                <th class="p-2 whitespace-nowrap">
                                     <div class="font-semibold text-left">Name</div>
                                 </th>
                                 <th class="p-2 whitespace-nowrap">
-                                    <div class="font-semibold text-left">Email</div>
-                                </th>
-                                <th class="p-2 whitespace-nowrap">
-                                    <div class="font-semibold text-left">Spent</div>
-                                </th>
-                                <th class="p-2 whitespace-nowrap">
-                                    <div class="font-semibold text-center">Country</div>
+                                    <div class="font-semibold text-left">Last Login</div>
                                 </th>
                             </tr>
                         </thead>
                         <tbody class="text-sm divide-y divide-gray-100">
+                            {% for employee in org_details.employees %}
                             <tr>
                                 <td class="p-2 whitespace-nowrap">
                                     <div class="flex items-center">
-                                        <div class="font-medium text-gray-800">Alex Shatov</div>
+                                        <div class="font-medium text-gray-800">{{employee.username}}</div>
                                     </div>
                                 </td>
                                 <td class="p-2 whitespace-nowrap">
-                                    <div class="text-left">alexshatov@gmail.com</div>
+                                    <div class="text-left">{{employee.first_name}} {{employee.last_name}}</div>
                                 </td>
                                 <td class="p-2 whitespace-nowrap">
-                                    <div class="text-left font-medium text-green-500">$2,890.66</div>
-                                </td>
-                                <td class="p-2 whitespace-nowrap">
-                                    <div class="text-lg text-center">🇺🇸</div>
+                                    <div class="text-left font-medium">{{employee.last_login}}</div>
                                 </td>
                             </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                     <hr class="m-1 mb-2">

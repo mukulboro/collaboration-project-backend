@@ -3,16 +3,25 @@
 {% block sidecontent %}
 <h1 class="text-blue-600 font-extrabold mb-5 text-center text-6xl">Your Projects</h1>
 
-<div class="grid grid-cols-1 gap-4 px-20 lg:grid-cols-2 mb-5 lg:gap-8">
+<div class="grid grid-cols-1 gap-4 px-20 lg:grid-cols-3 mb-5 lg:gap-8">
     {% for project in projects %}
-    <div class="h-32 rounded-lg shadow-lg bg-blue-200">
-        {{project.name}}
+    <div class="rounded-lg p-2 shadow-lg bg-blue-200">
+        <h1 class="text-blue-600 font-bold mb-5 text-center text-xl">{{project.name}}</h1>
+        <h1 class="text-black mb-5 text-center text-l">Created On: {{project.created}}</h1>
+        <form class="flex justify-center" action="/admin/projects/manage" method="get">
+            {% csrf_token %}
+            <button type="submit" value="{{project.id}}"
+                class="inline-block rounded border border-red-500 bg-red-500 px-12 py-3 text-sm font-medium text-white hover:bg-transparent hover:text-red-600 focus:outline-none focus:ring active:text-red-500"
+                name="delete">
+                Remove
+            </button>
+        </form>
     </div>
     {% endfor %}
 </div>
 <hr>
 <h1 class="text-blue-600 font-extrabold mt-5 mb-5 text-center text-6xl">Create New Project</h1>
-<form class="p-20 mx-20 flex rounded-lg shadow-lg bg-blue-200" action="/admin/dashboard/projects/create" method="post">
+<form class="p-20 mx-20 flex rounded-lg shadow-lg bg-blue-200" action="/admin/projects/manage" method="post">
     {% csrf_token %}
     <input placeholder="Enter Name For New Project" type="text" id="prj_name" name="prj_name"
         class="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm" required>
