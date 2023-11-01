@@ -30,3 +30,6 @@ class RegisterForm(UserCreationForm):
 class LoginForm(forms.Form):
     username = forms.CharField(max_length=64)
     password = forms.CharField()
+
+class NewProjectForm(forms.Form):
+    prj_name = forms.CharField(max_length=128)
