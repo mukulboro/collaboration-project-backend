@@ -55,3 +55,14 @@ class NewAnnouncementForm(forms.Form):
     title = forms.CharField(max_length=128)
     body = forms.CharField()
     project = forms.IntegerField()
+
+class SettingsForm(forms.Form):
+    org_name = forms.CharField(max_length=128)
+    org_description = forms.CharField()
+    first_name = forms.CharField(max_length=64)
+    last_name = forms.CharField(max_length=64)
+    email_address = forms.EmailField()
+    password1 = forms.CharField(max_length=64, required=False)
+    password2 = forms.CharField(max_length=64, required=False)
+
+

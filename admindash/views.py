@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, HttpResponse
 from django.contrib.auth import authenticate, logout, login, get_user_model
+from django.contrib.auth.hashers import make_password
 from endusers.models import Organization, OrganizationAdmin, EndUser
 from api.models import (
     Project,
@@ -18,6 +19,7 @@ from .forms import (
     NewTeamForm,
     AddUserToTeamForm,
     NewAnnouncementForm,
+    SettingsForm,
 )
 
 User = get_user_model()
@@ -452,5 +454,62 @@ def announcements(request):
             announcement.delete()
             return redirect("/admin/dashboard/announcements")
         else:
-            return render(request, "error.html", {"code": 400, "message": "Bad Request"})
+            return render(
+                request, "error.html", {"code": 400, "message": "Bad Request"}
+            )
 
+
+def dashboard_account(request):
+    if request.method == "GET":
+        error = request.GET.get("error")
+        org_admin = OrganizationAdmin.objects.get(user=request.user)
+        org = org_admin.organization
+        return render(
+            request,
+            "dashboard_settings.html",
+            {
+                "error": error,
+                "details": {
+                    "org_name": (org.name),
+                    "org_description": org.description,
+                    "first_name": request.user.first_name,
+                    "last_name": request.user.last_name,
+                    "email": request.user.email,
+                },
+            },
+        )
+    elif request.method == "POST":
+        form = SettingsForm(request.POST)
+        if form.is_valid():
+            user = User.objects.get(pk=request.user.pk)
+            org_name = form.cleaned_data["org_name"]
+            org_admin = OrganizationAdmin.objects.get(user=user)
+            org = org_admin.organization
+            org_description = form.cleaned_data["org_description"]
+            first_name = form.cleaned_data["first_name"]
+            last_name = form.cleaned_data["last_name"]
+            email_address = form.cleaned_data["email_address"]
+            password1 = form.cleaned_data["password1"]
+            password2 = form.cleaned_data["password2"]
+
+            org.name = org_name
+            org.description = org_description
+            org.save()
+
+            user.first_name = first_name
+            user.last_name = last_name
+            user.email = email_address
+
+            if password1 and password2:
+                if not password1 == password2:
+                    return redirect(
+                        f"/admin/dashboard/settings?error=Passwords Do Not Match"
+                    )
+                hashed_password = make_password(password1)
+                user.password = hashed_password
+            
+            user.save()
+                
+            return redirect("/admin/dashboard/settings")
+        else:
+            return redirect(f"/admin/dashboard/settings?error={form.errors.as_text}")

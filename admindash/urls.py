@@ -16,5 +16,6 @@ urlpatterns = [
     path("teams/manage", views.teams, name="manage_teams"),
     path("teams/employees", views.users_in_teams, name="users_in_teams"),
     path("dashboard/announcements", views.dashboard_announcements, name="dashboard_announcements"),
-    path("announcement/manage", views.announcements, name="manage_announcements")
+    path("announcement/manage", views.announcements, name="manage_announcements"),
+    path("dashboard/settings", views.dashboard_account, name="dashboard_account")
 ]
