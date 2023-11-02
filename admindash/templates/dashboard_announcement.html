@@ -1,0 +1,86 @@
+{% extends "dashboard_base.html" %}
+
+{% block sidecontent %}
+<h1 class="text-blue-600 font-extrabold mb-5 text-center text-6xl">Announcements</h1>
+{% if error %}
+<span class="flex self-end justify-center rounded-full bg-red-100 mb-2 px-2.5 py-0.5 text-red-700">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+        class="-ms-1 me-1.5 h-4 w-4">
+        <path stroke-linecap="round" stroke-linejoin="round"
+            d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+    </svg>
+
+    <p class="whitespace-nowrap text-sm">{{error}}</p>
+</span>
+{% endif %}
+
+{% for project in projects %}
+<h2 class="text-blue-600 font-extrabold px-20 text-left text-4xl">Project Name: {{project.project_details.name}}</h1>
+    <div class="grid grid-cols-1 gap-4 px-20 lg:grid-cols-3 mb-5 lg:gap-8">
+        {% for announcement in project.announcements %}
+        <div class="rounded-lg p-5 shadow-lg bg-blue-200">
+            <div class="flow-root">
+                <dl class="-my-3 divide-y divide-gray-100 text-sm">
+                    <div class="grid grid-cols-1 gap-1 py-3 sm:grid-cols-3 sm:gap-4">
+                        <dt class="font-medium text-gray-900">Title</dt>
+                        <dd class="text-gray-700 sm:col-span-2">{{announcement.title}}</dd>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-1 py-3 sm:grid-cols-3 sm:gap-4">
+                        <dt class="font-medium text-gray-900">Body</dt>
+                        <dd class="text-gray-700 sm:col-span-2">{{announcement.body}}</dd>
+                    </div>
+                    <div class="grid grid-cols-1 gap-1 py-3 sm:grid-cols-3 sm:gap-4">
+                        <dt class="font-medium text-gray-900">Date</dt>
+                        <dd class="text-gray-700 sm:col-span-2">{{announcement.created_at}}</dd>
+                    </div>
+                </dl>
+                <form class="flex mt-2 justify-center" action="/admin/announcement/manage" method="get">
+                    {% csrf_token %}
+                    <button type="submit" value="{{announcement.pk}}"
+                        class="rounded border border-red-500 bg-red-500 px-12 py-3 text-sm font-medium text-white hover:bg-transparent hover:text-red-600 focus:outline-none focus:ring active:text-red-500"
+                        name="delete">
+                        Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+
+        <div class="rounded-lg p-5 shadow-lg bg-green-400">
+            <form class="flex-column px-10" action="/admin/announcement/manage" method="post">
+                <h1 class="text-blue-600 font-extrabold mb-5 text-center text-xl">Add New Announcement</h1>
+
+                {% csrf_token %}
+                <input type="hidden" name="project" value={{project.project_details.pk}}>
+                <label for="title"
+                    class="relative block mb-4 rounded-md border border-black shadow-sm focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600">
+                    <input type="text" id="title" name="title"
+                        class="peer border-none bg-transparent placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0"
+                        placeholder="Title" required />
+                    <span
+                        class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-green-400 p-0.5 text-xs text-gray-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-xs">
+                        Title
+                    </span>
+                </label>
+
+                <label for="body"
+                    class="relative block rounded-md border border-black shadow-sm focus-within:border-green-400 focus-within:ring-1 focus-within:ring-blue-600">
+                    <textarea cols="40"
+                        class="peer border-none bg-transparent placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0"
+                        name="body" placeholder=""></textarea>
+
+                    <span
+                        class="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-green-400 p-0.5 text-xs text-gray-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-xs">
+                        Body
+                    </span>
+                </label>
+                <button type="submit"
+                    class="w-full mt-2 rounded border border-green-600 bg-green-600 px-12 py-3 text-sm font-medium text-white hover:bg-transparent hover:text-blue-600 focus:outline-none focus:ring active:text-blue-500">
+                    Add
+                </button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+    {% endblock %}

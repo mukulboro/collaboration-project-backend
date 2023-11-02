@@ -32,3 +32,8 @@ class UsersInTeams(TimeStampMixIn):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
     is_lead = models.BooleanField(default=False)
+
+class Announcement(TimeStampMixIn):
+    title = models.CharField(max_length=128)
+    body = models.CharField()
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)

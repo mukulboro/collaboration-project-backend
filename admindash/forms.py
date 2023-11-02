@@ -50,3 +50,8 @@ class NewTeamForm(forms.Form):
 class AddUserToTeamForm(forms.Form):
     new_user = forms.IntegerField()
     team = forms.IntegerField()
+
+class NewAnnouncementForm(forms.Form):
+    title = forms.CharField(max_length=128)
+    body = forms.CharField()
+    project = forms.IntegerField()

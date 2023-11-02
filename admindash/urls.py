@@ -14,5 +14,7 @@ urlpatterns = [
     path("project/employees", views.employees_in_project, name="project_employees"),
     path("dashboard/teams", views.dashboard_teams, name="dashboard_teams"),
     path("teams/manage", views.teams, name="manage_teams"),
-    path("teams/employees", views.users_in_teams, name="users_in_teams")
+    path("teams/employees", views.users_in_teams, name="users_in_teams"),
+    path("dashboard/announcements", views.dashboard_announcements, name="dashboard_announcements"),
+    path("announcement/manage", views.announcements, name="manage_announcements")
 ]

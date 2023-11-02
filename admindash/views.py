@@ -1,7 +1,14 @@
 from django.shortcuts import render, redirect, HttpResponse
 from django.contrib.auth import authenticate, logout, login, get_user_model
 from endusers.models import Organization, OrganizationAdmin, EndUser
-from api.models import Project, UsersInProjects, UsersInOrganizations, Team, UsersInTeams
+from api.models import (
+    Project,
+    UsersInProjects,
+    UsersInOrganizations,
+    Team,
+    UsersInTeams,
+    Announcement,
+)
 from .forms import (
     RegisterForm,
     LoginForm,
@@ -9,7 +16,8 @@ from .forms import (
     AddEmployeeForm,
     EmployeeToProjectForm,
     NewTeamForm,
-    AddUserToTeamForm
+    AddUserToTeamForm,
+    NewAnnouncementForm,
 )
 
 User = get_user_model()
@@ -194,7 +202,6 @@ def projects(request):
         delete = request.GET.get("delete")
         if delete:
             project = Project.objects.get(pk=delete)
-            print(project)
             project.delete()
             return redirect("/admin/dashboard/projects")
 
@@ -299,7 +306,6 @@ def employees_in_project(request):
                 new_relation.save()
                 return redirect(f"/admin/dashboard/projects?get_project={project_id}")
         else:
-            print(form.errors.as_text)
             return redirect(f"/admin/dashboard/projects?error=Select+Valid+User")
     elif request.method == "GET":
         relation_id = request.GET.get("relation")
@@ -311,7 +317,7 @@ def employees_in_project(request):
 
 def dashboard_teams(request):
     if request.user.is_authenticated:
-        error = request.GET.get('error')
+        error = request.GET.get("error")
         org_admin = OrganizationAdmin.objects.get(user=request.user)
         projects = Project.objects.filter(organization=org_admin.organization)
         project_list = []
@@ -322,26 +328,30 @@ def dashboard_teams(request):
             for team in teams:
                 team_memebers = UsersInTeams.objects.filter(team=team)
 
-                team_list.append({
-                    "team_name" : team.name,
-                    "team_leader" : team.leader,
-                    "team_pk" : team.pk,
-                    "team_members":team_memebers
-                })
-            project_list.append({
-                "name":project.name,
-                "id":project.pk,
-                "users" : prj_emps,
-                "teams" : team_list
-            })
+                team_list.append(
+                    {
+                        "team_name": team.name,
+                        "team_leader": team.leader,
+                        "team_pk": team.pk,
+                        "team_members": team_memebers,
+                    }
+                )
+            project_list.append(
+                {
+                    "name": project.name,
+                    "id": project.pk,
+                    "users": prj_emps,
+                    "teams": team_list,
+                }
+            )
             team_list = []
-        return render(request, "dashboard_team.html", {
-            "projects":project_list,
-            "error":error
-        })
+        return render(
+            request, "dashboard_team.html", {"projects": project_list, "error": error}
+        )
     else:
         return render(request, "error.html", {"code": 401, "message": "Unauthorized"})
-    
+
+
 def teams(request):
     if request.method == "POST":
         form = NewTeamForm(request.POST)
@@ -359,7 +369,7 @@ def teams(request):
             return redirect("/admin/dashboard/teams")
         else:
             return redirect(f"/admin/dashboard/teams?error={form.errors.as_text}")
-        
+
     elif request.method == "GET":
         team_id = request.GET.get("delete")
         if team_id:
@@ -368,7 +378,8 @@ def teams(request):
             return redirect("/admin/dashboard/teams")
         else:
             return redirect("/admin/dashboard/teams")
-        
+
+
 def users_in_teams(request):
     if request.method == "POST":
         form = AddUserToTeamForm(request.POST)
@@ -379,7 +390,9 @@ def users_in_teams(request):
             team = Team.objects.get(pk=team_id)
             check_existence = UsersInTeams.objects.filter(user=user, team=team)
             if check_existence:
-                return redirect("/admin/dashboard/teams?error=User Already in Organization")
+                return redirect(
+                    "/admin/dashboard/teams?error=User Already in Organization"
+                )
 
             new_user_in_team = UsersInTeams(user=user, team=team, is_lead=False)
             new_user_in_team.save()
@@ -395,3 +408,49 @@ def users_in_teams(request):
         user_in_team = UsersInTeams.objects.filter(user=user, team=team)
         user_in_team.delete()
         return redirect("/admin/dashboard/teams")
+
+
+def dashboard_announcements(request):
+    if request.user.is_authenticated:
+        error = request.GET.get("error")
+        org_admin = OrganizationAdmin.objects.get(user=request.user)
+        projects = Project.objects.filter(organization=org_admin.organization)
+        project_list = []
+        for project in projects:
+            announcements = Announcement.objects.filter(project=project)
+            project_list.append(
+                {"project_details": project, "announcements": announcements}
+            )
+        return render(
+            request,
+            "dashboard_announcement.html",
+            {"projects": project_list, "error": error},
+        )
+    else:
+        return render(request, "error.html", {"code": 401, "message": "Unauthorized"})
+
+
+def announcements(request):
+    if request.method == "POST":
+        form = NewAnnouncementForm(request.POST)
+        if form.is_valid():
+            project_id = form.cleaned_data["project"]
+            title = form.cleaned_data["title"]
+            body = form.cleaned_data["body"]
+            project = Project.objects.get(pk=project_id)
+            new_announcement = Announcement(title=title, body=body, project=project)
+            new_announcement.save()
+            return redirect("/admin/dashboard/announcements")
+        else:
+            return redirect(
+                f"/admin/dashboard/announcements?error={form.errors.as_text}"
+            )
+    elif request.method == "GET":
+        announcement_id = request.GET.get("delete")
+        if announcement_id:
+            announcement = Announcement.objects.get(pk=announcement_id)
+            announcement.delete()
+            return redirect("/admin/dashboard/announcements")
+        else:
+            return render(request, "error.html", {"code": 400, "message": "Bad Request"})
+
