@@ -41,3 +41,12 @@ class AddEmployeeForm(forms.Form):
 class EmployeeToProjectForm(forms.Form):
     user_id = forms.IntegerField()
     project_id = forms.IntegerField()
+
+class NewTeamForm(forms.Form):
+    team_name = forms.CharField(max_length=64)
+    team_leader = forms.IntegerField()
+    project = forms.IntegerField()
+
+class AddUserToTeamForm(forms.Form):
+    new_user = forms.IntegerField()
+    team = forms.IntegerField()

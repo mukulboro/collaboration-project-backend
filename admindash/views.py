@@ -1,8 +1,16 @@
 from django.shortcuts import render, redirect, HttpResponse
 from django.contrib.auth import authenticate, logout, login, get_user_model
 from endusers.models import Organization, OrganizationAdmin, EndUser
-from api.models import Project, UsersInProjects, UsersInOrganizations
-from .forms import RegisterForm, LoginForm, NewProjectForm, AddEmployeeForm, EmployeeToProjectForm
+from api.models import Project, UsersInProjects, UsersInOrganizations, Team, UsersInTeams
+from .forms import (
+    RegisterForm,
+    LoginForm,
+    NewProjectForm,
+    AddEmployeeForm,
+    EmployeeToProjectForm,
+    NewTeamForm,
+    AddUserToTeamForm
+)
 
 User = get_user_model()
 
@@ -115,7 +123,11 @@ def dashboard_project(request):
                 {"name": project.name, "created": project.created_at, "id": project.pk}
             )
         if not get_project:
-            return render(request, "dashboard_project.html", {"projects": project_list, "error":error})
+            return render(
+                request,
+                "dashboard_project.html",
+                {"projects": project_list, "error": error},
+            )
         else:
             emp_list = []
             org_emp_list = []
@@ -124,31 +136,35 @@ def dashboard_project(request):
                 project=current_project
             )
             org_admin = OrganizationAdmin.objects.get(user=request.user)
-            employees_in_organization = UsersInOrganizations.objects.filter(organization=org_admin.organization)
+            employees_in_organization = UsersInOrganizations.objects.filter(
+                organization=org_admin.organization
+            )
             for employee in employees_in_project:
                 emp_list.append(
                     {
                         "username": employee.user.username,
                         "full_name": f"{employee.user.first_name} {employee.user.last_name}",
                         "joined": employee.created_at,
-                        "id" : employee.pk
+                        "id": employee.pk,
                     }
                 )
             for org_emp in employees_in_organization:
-                org_emp_list.append({
-                    "username" : org_emp.user.username,
-                    "full_name" : f"{org_emp.user.first_name} {org_emp.user.last_name}",
-                    "id" : org_emp.user.pk
-                })
+                org_emp_list.append(
+                    {
+                        "username": org_emp.user.username,
+                        "full_name": f"{org_emp.user.first_name} {org_emp.user.last_name}",
+                        "id": org_emp.user.pk,
+                    }
+                )
             return render(
                 request,
                 "dashboard_project.html",
                 {
                     "projects": project_list,
                     "employees": emp_list,
-                    "org_employees" : org_emp_list,
+                    "org_employees": org_emp_list,
                     "current_project": current_project.name,
-                    "current_project_id" : current_project.pk,
+                    "current_project_id": current_project.pk,
                 },
             )
 
@@ -259,7 +275,8 @@ def employees(request):
             return render(
                 request, "error.html", {"code": 400, "message": "Bad Request"}
             )
-        
+
+
 def employees_in_project(request):
     if request.method == "POST":
         form = EmployeeToProjectForm(request.POST)
@@ -269,11 +286,13 @@ def employees_in_project(request):
             project_id = form.cleaned_data["project_id"]
             user = User.objects.get(pk=user_id)
             project = Project.objects.get(pk=project_id)
-    
+
             check_existence = UsersInProjects.objects.filter(user=user, project=project)
 
             if check_existence:
-                return redirect(f"/admin/dashboard/projects?error=User Already In Project")
+                return redirect(
+                    f"/admin/dashboard/projects?error=User Already In Project"
+                )
 
             else:
                 new_relation = UsersInProjects(user=user, project=project)
@@ -288,3 +307,91 @@ def employees_in_project(request):
         project_id = user_in_project.project.pk
         user_in_project.delete()
         return redirect(f"/admin/dashboard/projects?get_project={project_id}")
+
+
+def dashboard_teams(request):
+    if request.user.is_authenticated:
+        error = request.GET.get('error')
+        org_admin = OrganizationAdmin.objects.get(user=request.user)
+        projects = Project.objects.filter(organization=org_admin.organization)
+        project_list = []
+        team_list = []
+        for project in projects:
+            prj_emps = UsersInProjects.objects.filter(project=project)
+            teams = Team.objects.filter(project=project)
+            for team in teams:
+                team_memebers = UsersInTeams.objects.filter(team=team)
+
+                team_list.append({
+                    "team_name" : team.name,
+                    "team_leader" : team.leader,
+                    "team_pk" : team.pk,
+                    "team_members":team_memebers
+                })
+            project_list.append({
+                "name":project.name,
+                "id":project.pk,
+                "users" : prj_emps,
+                "teams" : team_list
+            })
+            team_list = []
+        return render(request, "dashboard_team.html", {
+            "projects":project_list,
+            "error":error
+        })
+    else:
+        return render(request, "error.html", {"code": 401, "message": "Unauthorized"})
+    
+def teams(request):
+    if request.method == "POST":
+        form = NewTeamForm(request.POST)
+        if form.is_valid():
+            team_name = form.cleaned_data["team_name"]
+            team_leader = form.cleaned_data["team_leader"]
+            project_id = form.cleaned_data["project"]
+            leader_user = User.objects.get(pk=team_leader)
+            project = Project.objects.get(pk=project_id)
+            new_team = Team(name=team_name, leader=leader_user, project=project)
+            new_team.save()
+
+            user_in_team = UsersInTeams(is_lead=True, user=leader_user, team=new_team)
+            user_in_team.save()
+            return redirect("/admin/dashboard/teams")
+        else:
+            return redirect(f"/admin/dashboard/teams?error={form.errors.as_text}")
+        
+    elif request.method == "GET":
+        team_id = request.GET.get("delete")
+        if team_id:
+            team = Team.objects.get(pk=team_id)
+            team.delete()
+            return redirect("/admin/dashboard/teams")
+        else:
+            return redirect("/admin/dashboard/teams")
+        
+def users_in_teams(request):
+    if request.method == "POST":
+        form = AddUserToTeamForm(request.POST)
+        if form.is_valid():
+            user_id = form.cleaned_data["new_user"]
+            team_id = form.cleaned_data["team"]
+            user = User.objects.get(pk=user_id)
+            team = Team.objects.get(pk=team_id)
+            check_existence = UsersInTeams.objects.filter(user=user, team=team)
+            if check_existence:
+                return redirect("/admin/dashboard/teams?error=User Already in Organization")
+
+            new_user_in_team = UsersInTeams(user=user, team=team, is_lead=False)
+            new_user_in_team.save()
+            return redirect("/admin/dashboard/teams")
+        else:
+            return redirect(f"/admin/dashboard/teams?error={form.errors.as_data}")
+
+    elif request.method == "GET":
+        user_id = request.GET.get("delete")
+        team_id = request.GET.get("team")
+        user = User.objects.get(pk=user_id)
+        team = Team.objects.get(pk=team_id)
+        user_in_team = UsersInTeams.objects.filter(user=user, team=team)
+        user_in_team.delete()
+        return redirect("/admin/dashboard/teams")

@@ -1,0 +1,112 @@
+{% extends "dashboard_base.html" %}
+
+{% block sidecontent %}
+<h1 class="text-blue-600 font-extrabold mb-5 text-center text-6xl">Teams</h1>
+{% if error %}
+<span class="flex self-end justify-center rounded-full bg-red-100 mb-2 px-2.5 py-0.5 text-red-700">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+        class="-ms-1 me-1.5 h-4 w-4">
+        <path stroke-linecap="round" stroke-linejoin="round"
+            d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+    </svg>
+
+    <p class="whitespace-nowrap text-sm">{{error}}</p>
+</span>
+{% endif %}
+{% for project in projects %}
+<h2 class="text-blue-600 font-extrabold px-20 text-left text-4xl">Project Name: {{project.name}}</h1>
+    <div class="grid grid-cols-1 gap-4 px-20 lg:grid-cols-3 mb-5 lg:gap-8">
+        {% for team in project.teams %}
+        <div class="rounded-lg p-2 shadow-lg bg-blue-200">
+            <h3 class="text-blue-600 font-extrabold px-20 text-center text-2xl">
+                Team : {{team.team_name}}
+            </h3>
+            <h3 class="text-blue-600 px-20 text-center text-2xl">
+                Leader : {{team.team_leader.username}}
+            </h3>
+
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y-2 divide-gray-200 bg-blue-200 text-sm">
+                    <thead class="ltr:text-left rtl:text-right">
+                        <tr>
+                            <th class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">
+                                Username
+                            </th>
+                            <th class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">
+                                Full Name
+                            </th>
+                            <th class="px-4 py-2"></th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="divide-y divide-gray-200">
+                        {% for user in team.team_members %}
+                        <tr>
+                            <td class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">
+                                {{user.user.username}}
+                            </td>
+                            <td class="whitespace-nowrap px-4 py-2 text-gray-700">
+                                {{user.user.first_name}} {{user.user.last_name}}
+                            </td>
+                            <td class="whitespace-nowrap px-4 py-2">
+                                <form action="/admin/teams/employees" method="get">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="team" value={{team.team_pk}}>
+                                    <button type="submit" name="delete" value={{user.user.pk}}
+                                        class="inline-block rounded bg-red-600 px-4 py-2 text-xs font-medium text-white">
+                                        Remove
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <form class="flex justify-center my-2" action="/admin/teams/employees" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="team" value={{team.team_pk}}>
+                    <select name="new_user" class="mt-1.5 w-full rounded-lg border-gray-300 text-gray-700 sm:text-sm">
+                        <option value="">Add Team Member</option>
+                        {% for prj_emp in project.users %}
+                        <option value={{prj_emp.user.pk}}>{{prj_emp.user.username}} || {{prj_emp.user.first_name}}
+                            {{prj_emp.user.last_name}}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit"
+                        class=" mt-2 rounded-lg bg-green-600 px-5 py-3 text-sm font-medium text-white">
+                        Add
+                    </button>
+                </form>
+            </div>
+            <form class="flex justify-center" action="/admin/teams/manage" method="get">
+                {% csrf_token %}
+                <button type="submit" value="{{team.team_pk}}"
+                    class="inline-block rounded border border-red-500 bg-red-500 px-12 py-3 text-sm font-medium text-white hover:bg-transparent hover:text-red-600 focus:outline-none focus:ring active:text-red-500"
+                    name="delete">
+                    Delete Team
+                </button>
+            </form>
+        </div>
+        {% endfor %}
+        <div class="rounded-lg p-2 shadow-lg bg-green-400">
+            <h1 class="text-blue-600 font-extrabold mt-2 mb-2 text-center text-xl">Create New Team</h1>
+
+            <form class=" px-20 py-2 flex-column" action="/admin/teams/manage" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="project" value={{project.id}}>
+                <input placeholder="Enter Name For New Team" type="text" name="team_name"
+                    class="w-full rounded-lg flex border-gray-200 p-4 pe-12 text-sm shadow-sm" required>
+                <select name="team_leader" class="mt-1.5 w-full rounded-lg border-gray-300 text-gray-700 sm:text-sm">
+                    <option value="">Team Leader</option>
+                    {% for prj_emp in project.users %}
+                    <option value={{prj_emp.user.pk}}>{{prj_emp.user.username}} || {{prj_emp.user.first_name}}
+                        {{prj_emp.user.last_name}}</option>
+                    {% endfor %}
+                </select>
+                <button class="w-full mt-2 rounded-lg bg-green-600 px-5 py-3 text-sm font-medium text-white"
+                    type="submit">Submit</button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+    {% endblock %}

@@ -22,3 +22,13 @@ class UsersInProjects(TimeStampMixIn):
 class UsersInOrganizations(TimeStampMixIn):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
+
+class Team(TimeStampMixIn):
+    name = models.CharField(max_length=128)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    leader = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+
+class UsersInTeams(TimeStampMixIn):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE)
+    is_lead = models.BooleanField(default=False)
