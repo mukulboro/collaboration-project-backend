@@ -37,3 +37,7 @@ class NewProjectForm(forms.Form):
 class AddEmployeeForm(forms.Form):
     username = forms.CharField(max_length=64)
     email = forms.CharField(max_length=128)
+
+class EmployeeToProjectForm(forms.Form):
+    user_id = forms.IntegerField()
+    project_id = forms.IntegerField()

@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, HttpResponse
 from django.contrib.auth import authenticate, logout, login, get_user_model
 from endusers.models import Organization, OrganizationAdmin, EndUser
 from api.models import Project, UsersInProjects, UsersInOrganizations
-from .forms import RegisterForm, LoginForm, NewProjectForm, AddEmployeeForm
+from .forms import RegisterForm, LoginForm, NewProjectForm, AddEmployeeForm, EmployeeToProjectForm
 
 User = get_user_model()
 
@@ -65,37 +65,36 @@ def logout_admin(request):
 def dashboard(request):
     if request.user.is_authenticated:
         organizationAdmin = OrganizationAdmin.objects.get(user=request.user)
-        users_in_organization = UsersInOrganizations.objects.filter(organization=organizationAdmin.organization)
+        users_in_organization = UsersInOrganizations.objects.filter(
+            organization=organizationAdmin.organization
+        )
         projects = Project.objects.filter(organization=organizationAdmin.organization)
 
         crop_user = users_in_organization[:5]
         crop_project = projects[:5]
-        filteredData = {
-            "projects":[],
-            "employees": []
-        }
+        filteredData = {"projects": [], "employees": []}
         for project in crop_project:
-            filteredData["projects"].append({
-                "id": project.pk,
-                "name": project.name,
-                "created": project.created_at
-            })
-        
+            filteredData["projects"].append(
+                {"id": project.pk, "name": project.name, "created": project.created_at}
+            )
+
         for user in crop_user:
-            filteredData["employees"].append({
-                "first_name" : user.user.first_name,
-                "last_name" : user.user.last_name,
-                "last_login" : user.user.last_login,
-                "username" : user.user.username
-            })
-        
+            filteredData["employees"].append(
+                {
+                    "first_name": user.user.first_name,
+                    "last_name": user.user.last_name,
+                    "last_login": user.user.last_login,
+                    "username": user.user.username,
+                }
+            )
+
         organizationDetails = {
             "name": organizationAdmin.organization.name,
             "description": organizationAdmin.organization.description,
             "no_of_projects": organizationAdmin.organization.no_of_projects,
-            "total_employees" : len(users_in_organization),
-            "projects" : filteredData["projects"],
-            "employees" : filteredData["employees"]
+            "total_employees": len(users_in_organization),
+            "projects": filteredData["projects"],
+            "employees": filteredData["employees"],
         }
         return render(
             request, "dashboard_home.html", {"org_details": organizationDetails}
@@ -107,17 +106,52 @@ def dashboard(request):
 def dashboard_project(request):
     project_list = []
     if request.user.is_authenticated:
+        error = request.GET.get("error")
+        get_project = request.GET.get("get_project")
         org_admin = OrganizationAdmin.objects.get(user=request.user)
         projects = Project.objects.filter(organization=org_admin.organization)
         for project in projects:
             project_list.append(
-                {
-                    "name": project.name,
-                    "created": project.created_at,
-                    "id": project.pk
-                }
+                {"name": project.name, "created": project.created_at, "id": project.pk}
             )
-        return render(request, "dashboard_project.html", {"projects": project_list})
+        if not get_project:
+            return render(request, "dashboard_project.html", {"projects": project_list, "error":error})
+        else:
+            emp_list = []
+            org_emp_list = []
+            current_project = Project.objects.get(pk=get_project)
+            employees_in_project = UsersInProjects.objects.filter(
+                project=current_project
+            )
+            org_admin = OrganizationAdmin.objects.get(user=request.user)
+            employees_in_organization = UsersInOrganizations.objects.filter(organization=org_admin.organization)
+            for employee in employees_in_project:
+                emp_list.append(
+                    {
+                        "username": employee.user.username,
+                        "full_name": f"{employee.user.first_name} {employee.user.last_name}",
+                        "joined": employee.created_at,
+                        "id" : employee.pk
+                    }
+                )
+            for org_emp in employees_in_organization:
+                org_emp_list.append({
+                    "username" : org_emp.user.username,
+                    "full_name" : f"{org_emp.user.first_name} {org_emp.user.last_name}",
+                    "id" : org_emp.user.pk
+                })
+            return render(
+                request,
+                "dashboard_project.html",
+                {
+                    "projects": project_list,
+                    "employees": emp_list,
+                    "org_employees" : org_emp_list,
+                    "current_project": current_project.name,
+                    "current_project_id" : current_project.pk,
+                },
+            )
+
     else:
         return render(request, "error.html", {"code": 401, "message": "Unauthorized"})
 
@@ -169,7 +203,7 @@ def dashboard_employees(request):
                     "email": employee.user.email,
                     "first_name": employee.user.first_name,
                     "last_name": employee.user.last_name,
-                    "last_login":employee.user.last_login,
+                    "last_login": employee.user.last_login,
                     "joined": employee.created_at,
                 }
             )
@@ -225,3 +259,32 @@ def employees(request):
             return render(
                 request, "error.html", {"code": 400, "message": "Bad Request"}
             )
+        
+def employees_in_project(request):
+    if request.method == "POST":
+        form = EmployeeToProjectForm(request.POST)
+        if form.is_valid():
+            check_existence = None
+            user_id = form.cleaned_data["user_id"]
+            project_id = form.cleaned_data["project_id"]
+            user = User.objects.get(pk=user_id)
+            project = Project.objects.get(pk=project_id)
+    
+            check_existence = UsersInProjects.objects.filter(user=user, project=project)
+
+            if check_existence:
+                return redirect(f"/admin/dashboard/projects?error=User Already In Project")
+
+            else:
+                new_relation = UsersInProjects(user=user, project=project)
+                new_relation.save()
+                return redirect(f"/admin/dashboard/projects?get_project={project_id}")
+        else:
+            print(form.errors.as_text)
+            return redirect(f"/admin/dashboard/projects?error=Select+Valid+User")
+    elif request.method == "GET":
+        relation_id = request.GET.get("relation")
+        user_in_project = UsersInProjects.objects.get(pk=relation_id)
+        project_id = user_in_project.project.pk
+        user_in_project.delete()
+        return redirect(f"/admin/dashboard/projects?get_project={project_id}")

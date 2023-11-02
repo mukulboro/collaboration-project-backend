@@ -18,15 +18,109 @@
         </form>
     </div>
     {% endfor %}
+    <div class="rounded-lg p-2 shadow-lg bg-green-400">
+        <h1 class="text-blue-600 font-extrabold mt-5 mb-5 text-center text-xl">Create New Project</h1>
+        <form class=" px-20 py-2 flex-column" action="/admin/projects/manage" method="post">
+            {% csrf_token %}
+            <input placeholder="Enter Name For New Project" type="text" id="prj_name" name="prj_name"
+                class="w-full rounded-lg flex border-gray-200 p-4 pe-12 text-sm shadow-sm" required>
+            <button class="w-full mt-2 rounded-lg bg-green-600 px-5 py-3 text-sm font-medium text-white"
+                type="submit">Submit</button>
+        </form>
+    </div>
 </div>
 <hr>
-<h1 class="text-blue-600 font-extrabold mt-5 mb-5 text-center text-6xl">Create New Project</h1>
-<form class="p-20 mx-20 flex rounded-lg shadow-lg bg-blue-200" action="/admin/projects/manage" method="post">
-    {% csrf_token %}
-    <input placeholder="Enter Name For New Project" type="text" id="prj_name" name="prj_name"
-        class="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm" required>
-    <button class="inline-block rounded-lg bg-blue-600 px-5 py-3 text-sm font-medium text-white"
-        type="submit">Submit</button>
+<h1 class="text-blue-600 font-extrabold mb-5 text-center text-4xl">Employees in Project</h1>
+
+{% if error %}
+<span class="flex self-end justify-center rounded-full bg-red-100 mb-2 px-2.5 py-0.5 text-red-700">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+        class="-ms-1 me-1.5 h-4 w-4">
+        <path stroke-linecap="round" stroke-linejoin="round"
+            d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+    </svg>
+
+    <p class="whitespace-nowrap text-sm">{{error}}</p>
+</span>
+{% endif %}
+
+<form class="flex px-20 justify-center items-center">
+    <select name="get_project" id="HeadlineAct"
+        class="mt-1.5 w-full rounded-lg border-gray-300 text-gray-700 sm:text-sm">
+        <option value="">Project Name</option>
+        {% for project in projects %}
+        <option value={{project.id}}>{{project.name}}</option>
+        {% endfor %}
+    </select>
+    <button class="mt-2 rounded-lg bg-blue-600 px-5 py-3 text-sm font-medium text-white">
+        View
+    </button>
 </form>
+
+<h1 class="text-blue-600 font-extrabold text-center text-2xl">
+    {{current_project}}
+</h1>
+<div class="overflow-x-auto px-50 flex justify-center">
+    <table class=" divide-y-2 divide-gray-200 bg-white text-sm">
+        {% if employees %}
+        <thead class="ltr:text-left rtl:text-right">
+            <tr>
+                <th class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">
+                    Username
+                </th>
+                <th class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">
+                    Full Name
+                </th>
+                <th class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">
+                    Joined
+                </th>
+                <th class="px-4 py-2">Action</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+            {% for employee in employees %}
+            <tr>
+                <td class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">
+                    {{employee.username}}
+                </td>
+                <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{employee.full_name}}</td>
+                <td class="whitespace-nowrap px-4 py-2 text-gray-700">{{employee.joined}}</td>
+                <td class="whitespace-nowrap px-4 py-2">
+                    <form action="/admin/project/employees" method="get">
+                        {% csrf_token %}
+                        <button type="submit" name="relation" value={{employee.id}}
+                            class="inline-block rounded bg-red-600 px-4 py-2 text-xs font-medium text-white">
+                            DELETE
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+{% if org_employees and current_project%}
+<div class="rounded-lg p-5 mx-20 shadow-lg bg-green-400">
+    <h1 class="text-blue-600 font-extrabold mb-5 text-center text-xl">Add Employees To Project</h1>
+
+    <form class="flex-column px-10" action="/admin/project/employees" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="project_id" value={{current_project_id}}>
+        <select name="user_id" class="mt-1.5 w-full rounded-lg border-gray-300 text-gray-700 sm:text-sm">
+            <option value="">Select Employee</option>
+            {% for emps in org_employees %}
+            <option value={{emps.id}}>{{emps.username}} || {{emps.full_name}}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit"
+            class="w-full mt-2 rounded border border-green-600 bg-green-600 px-12 py-3 text-sm font-medium text-white">
+            Add
+        </button>
+    </form>
+</div>
+{% endif %}
 
 {% endblock %}
