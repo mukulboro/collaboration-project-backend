@@ -1,5 +1,6 @@
 from pathlib import Path
 import environ
+import os
 
 env = environ.Env()
 environ.Env.read_env()
@@ -127,3 +128,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+PARENT_DIR = os.getcwd()
+
+MEDIA_ROOT = os.path.join(PARENT_DIR, "media")
+
+MEDIA_URL = "/media/"
+
+print(MEDIA_ROOT)

@@ -62,14 +62,17 @@ class LoginView(APIView):
             user = authenticate(username=username, password=password)
             if user is None:
                 return Response({"error":"Invalid credentials"}, status=401)
+            end_user = EndUser.objects.get(user=user)
+            pp = end_user.profile_picture
+            print(str(pp.image_path))
+            pp_url = str(pp.image_path)
             token = Token.objects.create(user=user)
-            return Response({"success":"Login successful", "token":token.key})
+            return Response({"success":"Login successful", "token":token.key, "profile_picture":pp_url})
         except IntegrityError as e:
             token = Token.objects.get(user=user)
             token.delete()
             new_token = Token.objects.create(user=user)
-            return Response({"success":"Login successful", "token":new_token.key})
-            
+            return Response({"success":"Login successful", "token":new_token.key, "profile_picture":pp_url})
         except BaseException as e:
-            print(e.__str__)
+            print(e)
             return Response({"error":"Internal Server Error"}, status=500)

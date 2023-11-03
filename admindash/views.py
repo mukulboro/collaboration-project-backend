@@ -513,3 +513,6 @@ def dashboard_account(request):
             return redirect("/admin/dashboard/settings")
         else:
             return redirect(f"/admin/dashboard/settings?error={form.errors.as_text}")
+        
+def dashboard_todo(request):
+    return render(request, "dashboard_todo.html")
