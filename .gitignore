@@ -1,9 +1,8 @@
 newenv/
 .env
 __pycache__/
-*/__pycache__/
+*/__pycache__/ 
 *.pyc
 profile/
-*/migrations/
 media/
 .vscode

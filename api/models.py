@@ -10,6 +10,11 @@ TODO_STATUS_CHOICES = (
     ("COMPLETE", "COMPLETE"),
 )
 
+TODO_PRIORITY_CHOCICES = (
+    ("HIGH", "HIGH"),
+    ("LOW", "LOW"),
+    ("MEDIUM", "MEDIUM")
+)
 
 class TimeStampMixIn(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
@@ -56,5 +61,6 @@ class Todo(TimeStampMixIn):
     title = models.CharField(max_length=128)
     body = models.CharField()
     status = models.CharField(choices=TODO_STATUS_CHOICES)
+    priority = models.CharField(choices=TODO_PRIORITY_CHOCICES)
     assigned_to = models.OneToOneField(User, on_delete=models.DO_NOTHING)
     team = models.OneToOneField(Team, on_delete=models.CASCADE)
