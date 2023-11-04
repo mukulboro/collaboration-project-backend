@@ -134,5 +134,3 @@ PARENT_DIR = os.getcwd()
 MEDIA_ROOT = os.path.join(PARENT_DIR, "media")
 
 MEDIA_URL = "/media/"
-
-print(MEDIA_ROOT)

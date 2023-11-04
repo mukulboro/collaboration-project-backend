@@ -64,8 +64,7 @@ class LoginView(APIView):
                 return Response({"error":"Invalid credentials"}, status=401)
             end_user = EndUser.objects.get(user=user)
             pp = end_user.profile_picture
-            print(str(pp.image_path))
-            pp_url = str(pp.image_path)
+            pp_url = str(pp.image_path.url)
             token = Token.objects.create(user=user)
             return Response({"success":"Login successful", "token":token.key, "profile_picture":pp_url})
         except IntegrityError as e:
