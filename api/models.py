@@ -80,3 +80,8 @@ class ProjectMedia(TimeStampMixIn):
         format="JPEG",
         options={"quality": 60},
     )
+
+class Document(TimeStampMixIn):
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    title = models.CharField(max_length=256)
+    body = models.TextField()

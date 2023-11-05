@@ -7,7 +7,8 @@ from .models import (
     UsersInTeams,
     Announcement,
     Todo,
-    ProjectMedia
+    ProjectMedia,
+    Document
 )
 
 
@@ -19,7 +20,8 @@ from .models import (
     UsersInTeams,
     Announcement,
     Todo,
-    ProjectMedia
+    ProjectMedia,
+    Document
 )
 class UniversalAdmin(admin.ModelAdmin):
     def get_list_display(self, request):
