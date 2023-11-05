@@ -10,8 +10,6 @@ User = get_user_model()
 
 class ProjectMediaView(APIView):
     def get(self, request, format=None):
-        parser_classes = [MultiPartParser]
-
         try:
             if type(request.user) == AnonymousUser:
                 return Response({"error": "Unauthorized"}, status=401)

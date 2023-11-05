@@ -84,7 +84,27 @@ class ToDoView(APIView):
                 return Response({"error": "Unauthorized"}, status=200)
 
             todo.delete()
-            return Response({"success": "Created Deleted Todo"}, status=200)
+            return Response({"success": "Deleted Todo"}, status=200)
+        except BaseException as e:
+            print(e)
+            return Response({"error": "Internal Server Error"}, status=500)
+        
+    def patch(self, request, format=None):
+        try:
+            if type(request.user) == AnonymousUser:
+                return Response({"error": "Unauthorized"}, status=401)
+            todo_id = request.data["todo"]
+            status = request.data["status"]
+            status =TODO_STATUS["status"]
+            todo = Todo.objects.get(pk=todo_id)
+            team = Team.objects.get(pk=todo.team.pk)
+            check_existence = UsersInTeams.objects.filter(team=team, user = request.user)
+            if not check_existence:
+                return Response({"error": "Unauthorized"}, status=401)
+            
+            todo.status = status
+            todo.save()
+            return Response({"success": "Updated Todo"}, status=200)
         except BaseException as e:
             print(e)
             return Response({"error": "Internal Server Error"}, status=500)
