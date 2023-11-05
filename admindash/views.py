@@ -87,7 +87,6 @@ def dashboard(request):
             organization=organizationAdmin.organization
         )
         projects = Project.objects.filter(organization=organizationAdmin.organization)
-
         crop_user = users_in_organization[:5]
         crop_project = projects[:5]
         filteredData = {"projects": [], "employees": []}
@@ -205,8 +204,13 @@ def projects(request):
         if delete:
             project = Project.objects.get(pk=delete)
             project.delete()
+            org_admin = OrganizationAdmin.objects.get(user=request.user)
+            print(org_admin.organization.pk)
+            org = Organization.objects.get(pk=org_admin.organization.pk)
+            prev_proj_no = org.no_of_projects
+            org.no_of_projects = prev_proj_no - 1
+            org.save()
             return redirect("/admin/dashboard/projects")
-
         else:
             return render(
                 request, "error.html", {"code": 400, "message": "Bad Request"}

@@ -62,5 +62,5 @@ class Todo(TimeStampMixIn):
     body = models.CharField()
     status = models.CharField(choices=TODO_STATUS_CHOICES)
     priority = models.CharField(choices=TODO_PRIORITY_CHOCICES)
-    assigned_to = models.OneToOneField(User, on_delete=models.DO_NOTHING)
-    team = models.OneToOneField(Team, on_delete=models.CASCADE)
+    assigned_to = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE)
