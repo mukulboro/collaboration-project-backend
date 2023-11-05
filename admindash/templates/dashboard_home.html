@@ -4,7 +4,7 @@
 <h1 class="text-blue-600 font-extrabold mb-5 text-center text-6xl">{{ org_details.name }}</h1>
 <p class="mb-5 text-center font-light">{{ org_details.description }}</p>
 
-<dl class="grid grid-cols-1 gap-4 px-20 sm:grid-cols-3">
+<dl class="grid grid-cols-1 gap-4 px-20 sm:grid-cols-2">
     <div class="flex flex-col rounded-lg shadow-lg bg-blue-100 px-4 py-8 text-center">
         <dt class="order-last text-lg font-medium text-gray-500">
             Total Projects
@@ -22,16 +22,6 @@
 
         <dd class="text-4xl font-extrabold text-blue-600 md:text-5xl">
             {{ org_details.total_employees }}
-        </dd>
-    </div>
-
-    <div class="flex flex-col rounded-lg shadow-lg bg-blue-100 px-4 py-8 text-center">
-        <dt class="order-last text-lg font-medium text-gray-500">
-            ToDos in Progress
-        </dt>
-
-        <dd class="text-4xl font-extrabold text-blue-600 md:text-5xl">
-            186
         </dd>
     </div>
 </dl>
@@ -136,77 +126,6 @@
                     </table>
                     <hr class="m-1 mb-2">
 
-                    <form class="flex justify-center" action="/admin/dashboard/employees">
-                        <button
-                            class="inline-block rounded border border-blue-600 bg-blue-600 px-12 py-3 text-sm font-medium text-white hover:bg-transparent hover:text-blue-600 focus:outline-none focus:ring active:text-blue-500"
-                            type="submit">
-                            View All
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </section>
-
-
-    <section class="flex-1 ml-2">
-
-        <div class="w-full max-w-2xl mx-auto bg-white shadow-lg rounded-sm border border-gray-200">
-            <header class="px-5 bg-blue-100 py-4 border-b border-gray-100">
-                <h2 class="font-semibold text-center text-blue-600">ToDos</h2>
-            </header>
-            <div class="p-3">
-                <div class="overflow-x-auto">
-                    <table class="table-auto w-full">
-                        <thead class="text-xs font-semibold uppercase text-gray-400 bg-gray-50">
-                            <tr>
-                                <th class="p-2 whitespace-nowrap">
-                                    <div class="font-semibold text-left">ID</div>
-                                </th>
-                                <th class="p-2 whitespace-nowrap">
-                                    <div class="font-semibold text-left">Project</div>
-                                </th>
-                                <th class="p-2 whitespace-nowrap">
-                                    <div class="font-semibold text-left">Assignee</div>
-                                </th>
-                                <th class="p-2 whitespace-nowrap">
-                                    <div class="font-semibold text-center">Status</div>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody class="text-sm divide-y divide-gray-100">
-                            <tr>
-                                <td class="p-2 whitespace-nowrap">
-                                    <div class="flex items-center">
-                                        <div class="font-medium text-gray-800">23</div>
-                                    </div>
-                                </td>
-                                <td class="p-2 whitespace-nowrap">
-                                    <div class="text-left">End Semester</div>
-                                </td>
-                                <td class="p-2 whitespace-nowrap">
-                                    <div class="text-left">mukularyal</div>
-                                </td>
-                                <td class="p-2 whitespace-nowrap">
-                                    <div class="text-lg text-center">
-                                        <!-- SPAN -->
-                                        <span
-                                            class="inline-flex items-center justify-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-emerald-700">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                                stroke-width="1.5" stroke="currentColor" class="-ms-1 me-1.5 h-4 w-4">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                            </svg>
-
-                                            <p class="whitespace-nowrap text-sm">Complete</p>
-                                            <!-- SPAN -->
-                                        </span>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <hr class="m-1 mb-2">
                     <form class="flex justify-center" action="/admin/dashboard/employees">
                         <button
                             class="inline-block rounded border border-blue-600 bg-blue-600 px-12 py-3 text-sm font-medium text-white hover:bg-transparent hover:text-blue-600 focus:outline-none focus:ring active:text-blue-500"
