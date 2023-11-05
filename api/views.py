@@ -10,7 +10,29 @@ TODO_STATUS = ["TODO", "PROGRESS", "COMPLETE"]
 TODO_PRIORITY = ["LOW", "MEDIUM", "HIGH"]
 class ToDoView(APIView):
     def get(self, request, format=None):
-        return Response("GET")
+        try:
+            if(type(request.user)==AnonymousUser):
+                return Response({"error":"Unauthorized"}, status=401)
+            team_id = request.data["team"]
+            team = Team.objects.get(pk=team_id)
+            user_in_team = UsersInTeams.objects.filter(team=team, user=request.user)
+            if not user_in_team:
+                return Response({"error":"Unauthorized"}, status=401)
+            todos = Todo.objects.filter(team=team)
+            payload =[]
+            for todo in todos:
+                payload.append({
+                    "id" : todo.pk,
+                    "title": todo.title,
+                    "body": todo.body,
+                    "priority" : todo.priority,
+                    "status": todo.status,
+                    "assigned_to": todo.assigned_to.username
+                })
+            return Response(payload, status=200)
+        except BaseException as e:
+            print(e)
+            return Response({"error":"Internal Server Error"}, status=500)
     
     def post(self, request, format=None):
         try:
@@ -43,6 +65,21 @@ class ToDoView(APIView):
             )
             new_todo.save()
             return Response({"success":"Created new todo"}, status=200)
+        except BaseException as e:
+            return Response({"error":"Internal Server Error"}, status=500)
+        
+    def delete(self, request, format=None):
+        try:
+            if(type(request.user)==AnonymousUser):
+                return Response({"error":"Unauthorized"}, status=401)
+            todo_id = request.data["todo"]
+            todo = Todo.objects.get(pk=todo_id)
+            team = Team.objects.get(pk=todo.team.pk)
+            if not (team.leader == request.user):
+                return Response({"error":"Unauthorized"}, status=200)
+            
+            todo.delete()
+            return Response({"success":"Created Deleted Todo"}, status=200)
         except BaseException as e:
             print(e)
             return Response({"error":"Internal Server Error"}, status=500)
