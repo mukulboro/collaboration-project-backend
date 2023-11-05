@@ -18,7 +18,7 @@ class ToDoView(APIView):
             user_in_team = UsersInTeams.objects.filter(team=team, user=request.user)
             if not user_in_team:
                 return Response({"error":"Unauthorized"}, status=401)
-            todos = Todo.objects.filter(team=team)
+            todos = Todo.objects.filter(team=team).order_by('-created_at')
             payload =[]
             for todo in todos:
                 payload.append({
@@ -27,7 +27,8 @@ class ToDoView(APIView):
                     "body": todo.body,
                     "priority" : todo.priority,
                     "status": todo.status,
-                    "assigned_to": todo.assigned_to.username
+                    "assigned_to": todo.assigned_to.username,
+                    "created_at" : todo.created_at
                 })
             return Response(payload, status=200)
         except BaseException as e:

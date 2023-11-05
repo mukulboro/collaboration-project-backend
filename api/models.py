@@ -1,6 +1,10 @@
 from django.db import models
 from endusers.models import Organization
 from django.contrib.auth import get_user_model
+from imagekit.models import ImageSpecField
+from imagekit.processors import ResizeToFill
+import os
+import uuid
 
 User = get_user_model()
 
@@ -10,11 +14,8 @@ TODO_STATUS_CHOICES = (
     ("COMPLETE", "COMPLETE"),
 )
 
-TODO_PRIORITY_CHOCICES = (
-    ("HIGH", "HIGH"),
-    ("LOW", "LOW"),
-    ("MEDIUM", "MEDIUM")
-)
+TODO_PRIORITY_CHOCICES = (("HIGH", "HIGH"), ("LOW", "LOW"), ("MEDIUM", "MEDIUM"))
+
 
 class TimeStampMixIn(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
@@ -64,3 +65,18 @@ class Todo(TimeStampMixIn):
     priority = models.CharField(choices=TODO_PRIORITY_CHOCICES)
     assigned_to = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
+
+
+class ProjectMedia(TimeStampMixIn):
+    def image_name(instance, filename):
+        ext = filename.split(".")[-1]
+        filename = "{}.{}".format(uuid.uuid4().hex, ext)
+        return os.path.join("media/project/", filename)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to=image_name)
+    image_thumbnail = ImageSpecField(
+        source="image",
+        processors=[ResizeToFill(200, 200)],
+        format="JPEG",
+        options={"quality": 60},
+    )
