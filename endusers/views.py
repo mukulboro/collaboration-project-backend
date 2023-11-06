@@ -2,10 +2,12 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser
 from django.contrib.auth import get_user_model, login
+from django.contrib.auth.models import AnonymousUser
 from django.contrib.auth.hashers import make_password
 from django.db import IntegrityError
 from cdn.models import ProfilePicture
 from .models import EndUser
+from api.models import UsersInProjects, UsersInTeams, Team
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
 
@@ -69,7 +71,7 @@ class LoginView(APIView):
                 {
                     "success": "Login successful",
                     "username": user.username,
-                    "userID" : user.pk,
+                    "userID": user.pk,
                     "token": token.key,
                     "profile_picture": pp_url,
                 }
@@ -82,11 +84,42 @@ class LoginView(APIView):
                 {
                     "success": "Login successful",
                     "username": user.username,
-                    "userID" : user.pk,
+                    "userID": user.pk,
                     "token": new_token.key,
                     "profile_picture": pp_url,
                 }
             )
+        except BaseException as e:
+            print(e)
+            return Response({"error": "Internal Server Error"}, status=500)
+
+
+class UserMetadataView(APIView):
+    def get(self, request, format=None):
+        try:
+            if type(request.user) == AnonymousUser:
+                return Response({"error": "Unauthorized"}, status=401)
+            user_in_project = UsersInProjects.objects.filter(user=request.user)
+            projects = []
+            for relationship in user_in_project:
+                teams = Team.objects.filter(project=relationship.project.pk)
+                team_list = []
+                for team in teams:
+                    check_existence = UsersInTeams.objects.filter(team=team, user=request.user)
+                    if check_existence:
+                        team_list.append({
+                            "id": check_existence[0].team.pk,
+                            "name" : check_existence[0].team.name,
+                            "isLead" : check_existence[0].team.leader.username == request.user.username
+                        })
+                projects.append(
+                    {
+                        "project_id": relationship.project.pk,
+                        "project_name": relationship.project.name,
+                        "teams" : team_list
+                    }
+                )
+            return Response(projects)
         except BaseException as e:
             print(e)
             return Response({"error": "Internal Server Error"}, status=500)

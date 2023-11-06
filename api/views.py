@@ -2,7 +2,7 @@ from django.contrib.auth.models import AnonymousUser
 from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import Team, Todo, UsersInTeams
+from .models import Team, Todo, UsersInTeams, UsersInProjects, Announcement
 
 User = get_user_model()
 
@@ -88,23 +88,81 @@ class ToDoView(APIView):
         except BaseException as e:
             print(e)
             return Response({"error": "Internal Server Error"}, status=500)
-        
+
     def patch(self, request, format=None):
         try:
             if type(request.user) == AnonymousUser:
                 return Response({"error": "Unauthorized"}, status=401)
             todo_id = request.data["todo"]
             status = request.data["status"]
-            status =TODO_STATUS["status"]
+            status = TODO_STATUS["status"]
             todo = Todo.objects.get(pk=todo_id)
             team = Team.objects.get(pk=todo.team.pk)
-            check_existence = UsersInTeams.objects.filter(team=team, user = request.user)
+            check_existence = UsersInTeams.objects.filter(team=team, user=request.user)
             if not check_existence:
                 return Response({"error": "Unauthorized"}, status=401)
-            
+
             todo.status = status
             todo.save()
             return Response({"success": "Updated Todo"}, status=200)
         except BaseException as e:
             print(e)
             return Response({"error": "Internal Server Error"}, status=500)
+
+
+class DashboardView(APIView):
+    def get(self, request, format=None):
+        try:
+            if type(request.user) == AnonymousUser:
+                return Response({"error": "Unauthorized"}, status=401)
+            projects = UsersInProjects.objects.filter(user=request.user)
+            announcement_list = []
+
+            for project in projects:
+                announcements = Announcement.objects.filter(
+                    project=project.project
+                ).order_by("-created_at")
+                for announcement in announcements:
+                    announcement_list.append(
+                        {
+                            "project": project.project.name,
+                            "project_id": project.project.pk,
+                            "id" : announcement.pk,
+                            "title" : announcement.title,
+                            "body" : announcement.body,
+                            "created_at" : announcement.created_at
+                        }
+                    )
+
+            todo_list = []
+            todos = Todo.objects.filter(assigned_to=request.user, status="TODO").order_by("-created_at")
+            for todo in todos:
+                todo_list.append({
+                    "id" : todo.pk,
+                    "title" : todo.title,
+                    "body" : todo.body,
+                    "status" : todo.status,
+                    "priority" : todo.priority,
+                    "created_at" : todo.created_at,
+                    "team" : todo.team.name,
+                    "team_id" : todo.team.pk,
+                    "project" : todo.team.project.name,
+                    "project_id" : todo.team.project.pk
+                })
+            return Response({
+                "announcements": announcement_list,
+                "todos" : todo_list
+            }, status=200)
+        except BaseException as e:
+            print(e)
+            return Response({"error": "Internal Server Error"}, status=500)
+        
+class ProjectsView(APIView):
+    def get(self, request, format=None):
+        try:
+            if type(request.user) == AnonymousUser:
+                return Response({"error": "Unauthorized"}, status=401)
+            
+        except BaseException as e:
+            print(e)
+            return Response({"error":"Internal Server Error"}, status=500)
