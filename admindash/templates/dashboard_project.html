@@ -3,6 +3,23 @@
 {% block sidecontent %}
 <h1 class="text-blue-600 font-extrabold mb-5 text-center text-6xl">Your Projects</h1>
 
+<div role="alert" class="rounded mx-20 mb-2 border-s-4 border-yellow-500 bg-yellow-50 p-4">
+    <div class="flex items-center gap-2 text-red-800">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5">
+            <path fill-rule="evenodd"
+                d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z"
+                clip-rule="evenodd" />
+        </svg>
+
+        <strong class="block font-medium"> Caution </strong>
+    </div>
+
+    <p class="mt-2 text-sm text-red-700">
+        Deleting any project also deletes the teams, todos and documents within.
+        <span class="font-extrabold">You will not be asked for a confirmation.</span>
+    </p>
+</div>
+
 <div class="grid grid-cols-1 gap-4 px-20 lg:grid-cols-3 mb-5 lg:gap-8">
     {% for project in projects %}
     <div class="rounded-lg p-2 shadow-lg bg-blue-200">
@@ -10,7 +27,7 @@
         <h1 class="text-black mb-5 text-center text-l">Created On: {{project.created}}</h1>
         <form class="flex justify-center" action="/admin/projects/manage" method="get">
             {% csrf_token %}
-            <button type="submit" value="{{project.id}}"
+            <button value="{{project.id}}"
                 class="inline-block rounded border border-red-500 bg-red-500 px-12 py-3 text-sm font-medium text-white hover:bg-transparent hover:text-red-600 focus:outline-none focus:ring active:text-red-500"
                 name="delete">
                 Delete
