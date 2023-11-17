@@ -36,7 +36,7 @@ This section includes the documentation for the frontend API. Do note that this 
 	- Response (401)
 	- - `{"error":"Invalid Credentials"}`
 	-----
-	3. **Dashboard Metadata**
+	3. **User Metadata**
 	 - URL: `/users/login/` 
 	- Method: `GET`
 	- Header
@@ -136,3 +136,16 @@ This section includes the documentation for the frontend API. Do note that this 
 	- Response (401)
 	- - `{"error":"Unauthorized"}`
 	-----
+## Dashboard Data Routes
+1. **Get Announcements and Todos**
+	 - URL: `/api/dashboard/` 
+	- Method: `GET`
+	- Header
+	- - `Authorization: Token SECRETTOKEN`
+	- Response (200)
+	-  - `{"announcements":[], "todos":[]}`
+	- Response (401)
+	- - `{"error":"Unauthorized"}`
+	-----
+## ToDo Routes
+**TO BE WRITTEN**

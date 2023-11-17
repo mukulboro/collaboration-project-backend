@@ -157,12 +157,3 @@ class DashboardView(APIView):
             print(e)
             return Response({"error": "Internal Server Error"}, status=500)
         
-class ProjectsView(APIView):
-    def get(self, request, format=None):
-        try:
-            if type(request.user) == AnonymousUser:
-                return Response({"error": "Unauthorized"}, status=401)
-            
-        except BaseException as e:
-            print(e)
-            return Response({"error":"Internal Server Error"}, status=500)
