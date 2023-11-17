@@ -23,7 +23,7 @@ class RegisterView(APIView):
             password = request.data["password"]
             profile_pic = request.FILES["profile_pic"]
             first_name = request.data["first_name"]
-            last_name = request.data["first_name"]
+            last_name = request.data["last_name"]
             email = request.data["email"]
             role = "USER"
 
