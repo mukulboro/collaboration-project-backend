@@ -94,6 +94,19 @@ class LoginView(APIView):
             return Response({"error": "Internal Server Error"}, status=500)
 
 
+class LogoutView(APIView):
+    def delete(self, request, format=None):
+        try:
+            if type(request.user) == AnonymousUser:
+                return Response({"error": "Unauthorized"}, status=401)
+            token = Token.objects.get(key=request.auth)
+            token.delete()
+            return Response({"success": "Logout Successful"})
+        except BaseException as e:
+            print(e)
+            return Response({"error": "Internal Server Error"}, status=500)
+
+
 class UserMetadataView(APIView):
     def get(self, request, format=None):
         try:
@@ -105,18 +118,23 @@ class UserMetadataView(APIView):
                 teams = Team.objects.filter(project=relationship.project.pk)
                 team_list = []
                 for team in teams:
-                    check_existence = UsersInTeams.objects.filter(team=team, user=request.user)
+                    check_existence = UsersInTeams.objects.filter(
+                        team=team, user=request.user
+                    )
                     if check_existence:
-                        team_list.append({
-                            "id": check_existence[0].team.pk,
-                            "name" : check_existence[0].team.name,
-                            "isLead" : check_existence[0].team.leader.username == request.user.username
-                        })
+                        team_list.append(
+                            {
+                                "id": check_existence[0].team.pk,
+                                "name": check_existence[0].team.name,
+                                "isLead": check_existence[0].team.leader.username
+                                == request.user.username,
+                            }
+                        )
                 projects.append(
                     {
                         "project_id": relationship.project.pk,
                         "project_name": relationship.project.name,
-                        "teams" : team_list
+                        "teams": team_list,
                     }
                 )
             return Response(projects)
