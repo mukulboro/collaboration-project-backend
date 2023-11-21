@@ -37,7 +37,7 @@ This section includes the documentation for the frontend API. Do note that this 
 	- - `{"error":"Invalid Credentials"}`
 	-----
 	3. **User Metadata**
-	 - URL: `/users/login/` 
+	 - URL: `/users/metadata/` 
 	- Method: `GET`
 	- Header
 	- - `Authorization: Token SECRETTOKEN`
