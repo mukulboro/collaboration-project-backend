@@ -31,13 +31,15 @@ This section includes the documentation for the frontend API. Do note that this 
 	-  - `{"success":"Login Successful", 
 		"username": "abcd", 
 		"userID": 7,
+		"fullName": "ABC DEF",
+		"email": "abc@def.com",
 		"token" : "SECRETTOKEN",
 		"profile_picture" : "/media/media/profile/abcd.jpg"}`
 	- Response (401)
 	- - `{"error":"Invalid Credentials"}`
 	-----
 	3. **User Metadata**
-	 - URL: `/users/metadata/` 
+	 - URL: `/users/login/` 
 	- Method: `GET`
 	- Header
 	- - `Authorization: Token SECRETTOKEN`
@@ -148,4 +150,58 @@ This section includes the documentation for the frontend API. Do note that this 
 	- - `{"error":"Unauthorized"}`
 	-----
 ## ToDo Routes
-**TO BE WRITTEN**
+1. **Get Todo List**
+	 - URL: `/api/todos/` 
+	- Method: `GET`
+	- Header
+	- - `Authorization: Token SECRETTOKEN`
+	- Request Body (JSON)
+	- - `team` (team id)
+	- Response (200)
+	-  - `[{"id":6, "title":"DEFG", "body":"todo body", "priority":"HIGH", "status": "TODO", "assigned_to": "myuername", "created_at":"2022-01-01"}]`
+	- Response (401)
+	- - `{"error":"Unauthorized"}`
+	-----
+2. **Add New Todo**
+	 - URL: `/api/todos/` 
+	- Method: `POST`
+	- Header
+	- - `Authorization: Token SECRETTOKEN`
+	- Request Body (JSON)
+	- - `team` (team id)
+	- - `title`
+	- - `body`
+	- - `status` [integer value 0, 1 or 2]
+	- - `priority` [integer value 0, 1 or 2]
+	- - `assigned_to` [username]
+	- Response (200)
+	-  - `{"success":"Created new todo"}`
+	- Response (401) [sent if token is invalid or if user is not team leader]
+	- - `{"error":"Unauthorized"}`
+	- Response (400) [sent if assigned_to username does not exist in team]
+	- - `{"error":"Bad Request"}`
+	-----
+	3. **Delete Todo**
+	 - URL: `/api/todos/` 
+	- Method: `DELETE`
+	- Header
+	- - `Authorization: Token SECRETTOKEN`
+	- Request Body (JSON)
+	- - `todo` (todo id)
+	- Response (200)
+	-  - `{"success":"Deleted todo"}`
+	- Response (401) [sent if token is invalid or if user is not team leader]
+	- - `{"error":"Unauthorized"}`
+	-----
+	3. **Update Todo (Status Only)**
+	 - URL: `/api/todos/` 
+	- Method: `PATCH`
+	- Header
+	- - `Authorization: Token SECRETTOKEN`
+	- Request Body (JSON)
+	- - `todo` (team id)
+	- - `status`[integer value 0, 1 or 2]
+	- Response (200)
+	-  - `{"success":"Updated todo"}`
+	- Response (401) 
+	- - `{"error":"Unauthorized"}`

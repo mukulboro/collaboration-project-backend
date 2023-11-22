@@ -56,7 +56,7 @@ class ToDoView(APIView):
             if not (team.leader == request.user):
                 return Response({"error": "Unauthorized"}, status=401)
 
-            user = User.objects.get(pk=assigned_to)
+            user = User.objects.get(username=assigned_to)
             check_existence = UsersInTeams.objects.filter(user=user, team=team)
             if not check_existence:
                 return Response({"error": "Bad Request"}, status=400)

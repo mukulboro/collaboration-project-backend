@@ -72,6 +72,8 @@ class LoginView(APIView):
                     "success": "Login successful",
                     "username": user.username,
                     "userID": user.pk,
+                    "email": user.email,
+                    "name": f"{user.first_name} {user.last_name}",
                     "token": token.key,
                     "profile_picture": pp_url,
                 }
@@ -85,6 +87,8 @@ class LoginView(APIView):
                     "success": "Login successful",
                     "username": user.username,
                     "userID": user.pk,
+                    "email": user.email,
+                    "name": f"{user.first_name} {user.last_name}",
                     "token": new_token.key,
                     "profile_picture": pp_url,
                 }
