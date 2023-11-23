@@ -13,7 +13,7 @@ class ProjectMediaView(APIView):
         try:
             if type(request.user) == AnonymousUser:
                 return Response({"error": "Unauthorized"}, status=401)
-            project_id = request.data["project"]
+            project_id = request.query_params["project"]
             project_medias = ProjectMedia.objects.filter(project=project_id).order_by(
                 "-created_at"
             )
@@ -79,7 +79,7 @@ class DocumentView(APIView):
         try:
             if type(request.user) == AnonymousUser:
                 return Response({"error": "Unauthorized"}, status=401)
-            project_id = request.data["project"]
+            project_id = request.query_params["project"]
             project = Project.objects.get(pk=project_id)
             user_in_project = UsersInProjects.objects.filter(
                 project=project_id, user=request.user

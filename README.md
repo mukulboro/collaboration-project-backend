@@ -155,7 +155,7 @@ This section includes the documentation for the frontend API. Do note that this 
 	- Method: `GET`
 	- Header
 	- - `Authorization: Token SECRETTOKEN`
-	- Request Body (JSON)
+	- Request Body (query params)
 	- - `team` (team id)
 	- Response (200)
 	-  - `[{"id":6, "title":"DEFG", "body":"todo body", "priority":"HIGH", "status": "TODO", "assigned_to": "myuername", "created_at":"2022-01-01"}]`
@@ -205,3 +205,18 @@ This section includes the documentation for the frontend API. Do note that this 
 	-  - `{"success":"Updated todo"}`
 	- Response (401) 
 	- - `{"error":"Unauthorized"}`
+	-----
+## Team Members Routes
+1. **Get Team Members List**
+	 - URL: `/api/team-members/` 
+	- Method: `GET`
+	- Header
+	- - `Authorization: Token SECRETTOKEN`
+	- Request Body (query params)
+	- - `team` (team id)
+	- Response (200)
+	-  - `[{"id":6, "username":"DEFG"}]`
+	- Response (401)
+	- - `{"error":"Unauthorized"}`
+	-----
+

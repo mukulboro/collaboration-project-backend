@@ -15,7 +15,7 @@ class ToDoView(APIView):
         try:
             if type(request.user) == AnonymousUser:
                 return Response({"error": "Unauthorized"}, status=401)
-            team_id = request.data["team"]
+            team_id = request.query_params["team"]
             team = Team.objects.get(pk=team_id)
             user_in_team = UsersInTeams.objects.filter(team=team, user=request.user)
             if not user_in_team:
@@ -157,3 +157,23 @@ class DashboardView(APIView):
             print(e)
             return Response({"error": "Internal Server Error"}, status=500)
         
+class TeamMembersView(APIView):
+    def get(self, request, format=None):
+        try:
+            if type(request.user) == AnonymousUser:
+                return Response({"error": "Unauthorized"}, status=401)
+            team_id = request.query_params["team"]
+            team = Team.objects.get(pk=team_id)
+            if not (team.leader == request.user):
+                return Response({"error": "Unauthorized"}, status=401)
+            users_in_teams = UsersInTeams.objects.filter(team=team)
+            filtered_data = []
+            for user in users_in_teams:
+                filtered_data.append({
+                    "id" : user.user.pk,
+                    "username" : user.user.username
+                })
+            return Response(filtered_data, status=200)
+        except BaseException as e:
+            print(e)
+            return Response({"error": "Internal Server Error"}, status=500)
