@@ -79,6 +79,10 @@ class DocumentView(APIView):
         try:
             if type(request.user) == AnonymousUser:
                 return Response({"error": "Unauthorized"}, status=401)
+            document_id = request.query.params["document"]
+            if document_id:
+                document = Document.objects.get(pk=document_id)
+                return Response({"body":document.body}, status=200)
             project_id = request.query_params["project"]
             project = Project.objects.get(pk=project_id)
             user_in_project = UsersInProjects.objects.filter(
@@ -95,7 +99,6 @@ class DocumentView(APIView):
                     {
                         "id": document.pk,
                         "title": document.title,
-                        "body": document.body,
                         "created_at": document.created_at,
                     }
                 )

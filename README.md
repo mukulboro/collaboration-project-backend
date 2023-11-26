@@ -105,14 +105,26 @@ This section includes the documentation for the frontend API. Do note that this 
 	- Method: `GET`
 	- Header
 	- - `Authorization: Token SECRETTOKEN`
-	- Request Body (JSON)
+	- Request (Query)
 	- - `project` (project id)
 	- Response (200)
 	-  - `[{"id":2, "title":"ABCD", "body":"markdown body", "created_at":"2022-02-01"}]`
 	- Response (401)
 	- - `{"error":"Unauthorized"}`
 	-----
-2. **Upload New Document**
+2. **Get Single Document**
+	 - URL: `/cdn/documents/` 
+	- Method: `GET`
+	- Header
+	- - `Authorization: Token SECRETTOKEN`
+	- Request (Query)
+	- - `document` (document id)
+	- Response (200)
+	-  - `[{"body":"markdown body"}]`
+	- Response (401)
+	- - `{"error":"Unauthorized"}`
+	-----
+3. **Upload New Document**
 	 - URL: `/cdn/documents/` 
 	- Method: `POST`
 	- Header
@@ -126,7 +138,7 @@ This section includes the documentation for the frontend API. Do note that this 
 	- Response (401)
 	- - `{"error":"Unauthorized"}`
 	-----
-3. **Delete Document**
+4. **Delete Document**
 	 - URL: `/cdn/documents/` 
 	- Method: `DELETE`
 	- Header
