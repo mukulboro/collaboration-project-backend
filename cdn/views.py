@@ -79,7 +79,7 @@ class DocumentView(APIView):
         try:
             if type(request.user) == AnonymousUser:
                 return Response({"error": "Unauthorized"}, status=401)
-            document_id = request.query.params["document"]
+            document_id = request.query_params["document"]
             if document_id:
                 document = Document.objects.get(pk=document_id)
                 return Response({"body":document.body}, status=200)
