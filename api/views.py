@@ -95,7 +95,7 @@ class ToDoView(APIView):
                 return Response({"error": "Unauthorized"}, status=401)
             todo_id = request.data["todo"]
             status = request.data["status"]
-            status = TODO_STATUS["status"]
+            status = TODO_STATUS[int(status)]
             todo = Todo.objects.get(pk=todo_id)
             team = Team.objects.get(pk=todo.team.pk)
             check_existence = UsersInTeams.objects.filter(team=team, user=request.user)
