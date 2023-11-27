@@ -62,7 +62,7 @@ class ProjectMediaView(APIView):
             if not project_media:
                 return Response({"error": "Bad Request"}, status=401)
             user_in_project = UsersInProjects.objects.filter(
-                user=request.user, project=project_media.project
+                user=request.user, project=project_media[0].project
             )
             if not user_in_project:
                 return Response({"error": "Unauthorized"}, status=401)
