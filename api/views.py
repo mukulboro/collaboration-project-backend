@@ -32,6 +32,8 @@ class ToDoView(APIView):
                         "status": todo.status,
                         "assigned_to": todo.assigned_to.username,
                         "created_at": todo.created_at,
+                        "project_id" : todo.team.project.pk,
+                        "assigned_by" : todo.team.leader.username
                     }
                 )
             return Response(payload, status=200)
