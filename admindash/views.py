@@ -9,7 +9,7 @@ from api.models import (
     Team,
     UsersInTeams,
     Announcement,
-    Todo
+    Todo,
 )
 from .forms import (
     RegisterForm,
@@ -435,10 +435,14 @@ def dashboard_announcements(request):
         )
     else:
         return render(request, "error.html", {"code": 401, "message": "Unauthorized"})
+
+
 # Utility Function for sorting
-    
+
+
 def get_score(e):
-    return e['score']
+    return e["score"]
+
 
 def dashboard_report(request):
     if request.user.is_authenticated:
@@ -459,15 +463,29 @@ def dashboard_report(request):
                     "assigned": len(assigned),
                     "in_progress": len(in_progress),
                     "completed": len(completed),
-                    "score" : round(len(completed)/(len(assigned)+len(in_progress)+len(completed)), 3)
+                    "score": round(
+                        len(completed)
+                        / (len(assigned) + len(in_progress) + len(completed)),
+                        3,
+                    ),
                 }
             )
         payload.sort(key=get_score, reverse=True)
+        if len(payload) < 1:
+            payload.append(
+                {
+                    "username": "No Data",
+                    "name": "No Data",
+                    "assigned": "No Data",
+                    "in_progress": "No Data",
+                    "completed": "No Data",
+                    "score": "No Data",
+                }
+            )
         return render(
             request,
             "dashboard_report.html",
-            {"table_list":payload,
-             "top_employee":payload[0]}
+            {"table_list": payload, "top_employee": payload[0]},
         )
     else:
         return render(request, "error.html", {"code": 401, "message": "Unauthorized"})
@@ -548,9 +566,9 @@ def dashboard_account(request):
                     )
                 hashed_password = make_password(password1)
                 user.password = hashed_password
-            
+
             user.save()
-                
+
             return redirect("/admin/dashboard/settings")
         else:
             return redirect(f"/admin/dashboard/settings?error={form.errors.as_text}")
