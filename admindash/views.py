@@ -9,6 +9,7 @@ from api.models import (
     Team,
     UsersInTeams,
     Announcement,
+    Todo
 )
 from .forms import (
     RegisterForm,
@@ -431,6 +432,42 @@ def dashboard_announcements(request):
             request,
             "dashboard_announcement.html",
             {"projects": project_list, "error": error},
+        )
+    else:
+        return render(request, "error.html", {"code": 401, "message": "Unauthorized"})
+# Utility Function for sorting
+    
+def get_score(e):
+    return e['score']
+
+def dashboard_report(request):
+    if request.user.is_authenticated:
+        payload = []
+        org_admin = OrganizationAdmin.objects.get(user=request.user)
+        users_in_org = UsersInOrganizations.objects.filter(
+            organization=org_admin.organization
+        )
+        for user in users_in_org:
+            todos = Todo.objects.filter(assigned_to=user.user)
+            assigned = [todo for todo in todos if todo.status == "TODO"]
+            in_progress = [todo for todo in todos if todo.status == "PROGRESS"]
+            completed = [todo for todo in todos if todo.status == "COMPLETE"]
+            payload.append(
+                {
+                    "username": user.user.username,
+                    "name": f"{user.user.first_name} {user.user.last_name}",
+                    "assigned": len(assigned),
+                    "in_progress": len(in_progress),
+                    "completed": len(completed),
+                    "score" : round(len(completed)/(len(assigned)+len(in_progress)+len(completed)), 3)
+                }
+            )
+        payload.sort(key=get_score, reverse=True)
+        return render(
+            request,
+            "dashboard_report.html",
+            {"table_list":payload,
+             "top_employee":payload[0]}
         )
     else:
         return render(request, "error.html", {"code": 401, "message": "Unauthorized"})

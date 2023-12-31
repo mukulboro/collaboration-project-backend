@@ -1,0 +1,41 @@
+{% extends "dashboard_base.html" %}
+
+{% block sidecontent %}
+<h1 class="text-blue-600 font-extrabold mb-5 text-center text-6xl">Employee Performance</h1>
+<h2 class="text-2xl mb-5 text-center">Your top employee is
+    <span class="font-bold">{{top_employee.name}}</span>
+    ({{top_employee.username}}) 
+    with a score of 
+    <span class="font-bold">{{top_employee.score}}</span>.
+</h2>
+
+<h1 class="text-blue-600 font-extrabold mb-5 text-center text-4xl">Rankings</h1>
+<div class="overflow-x-auto">
+    <table class="min-w-full px-30 divide-y-2 divide-gray-200 bg-white text-sm">
+        <thead class="ltr:text-left rtl:text-right">
+            <tr>
+                <th class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Employee</th>
+                <th class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Username</th>
+                <th class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">ToDo</th>
+                <th class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">In Progress</th>
+                <th class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Completed</th>
+                <th class="whitespace-nowrap px-4 py-2 font-medium text-gray-900">Score</th>
+            </tr>
+        </thead>
+
+        <tbody class="divide-y divide-gray-200">
+            {% for row in table_list %}
+            <tr>
+                <td class="whitespace-nowrap px-4 py-2 text-center font-medium text-gray-900">{{row.name}}</td>
+                <td class="whitespace-nowrap px-4 py-2 text-center text-gray-700">{{row.username}}</td>
+                <td class="whitespace-nowrap px-4 py-2 text-center text-gray-700">{{row.assigned}}</td>
+                <td class="whitespace-nowrap px-4 py-2 text-center text-gray-700">{{row.in_progress}}</td>
+                <td class="whitespace-nowrap px-4 py-2 text-center text-gray-700">{{row.completed}}</td>
+                <td class="whitespace-nowrap px-4 py-2 text-center text-gray-700">{{row.score}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %} TaskSphere | Login{% endblock %}
 
@@ -19,9 +20,9 @@
                 class="absolute inset-0 h-full w-full object-cover opacity-80" />
 
             <div class="hidden lg:relative lg:block lg:p-12">
-                <h2 class="mt-6 text-3xl font-bold text-white sm:text-3xl md:text-4xl">
-                    Login To TaskSphere
-                </h2>
+                <div class="w-full flex">
+                    <img class="invert" src="{% static 'tasksphere.png' %}" alt="Tasksphere logo">
+                </div>
 
                 <p class="mt-4 leading-relaxed text-white/90">
                     Empower your team, simplify collaboration, and boost productivity with TaskSphere. Our
